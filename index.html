@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smash Burger — Reservations & Menu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">SB</div>
+    <div>
+        <h1>Smash Burger</h1>
+        <p>Reservations & Dining</p>
+    </div>
+</header>
+
+<section class="hero">
+    <div>
+        <p class="tagline">GOOD FOOD. GOOD TIMES.</p>
+        <h2>Reserve Your Table</h2>
+        <p>Book your dining experience with us.</p>
+    </div>
+
+    <div class="hours">
+        <h3>Operating Hours</h3>
+        <p>Monday, Wednesday</p>
+        <p>Friday & Saturday</p>
+        <strong>10:00 AM – 7:00 PM</strong>
+    </div>
+</section>
+
+<main class="container">
+    <!-- RESERVATION FORM -->
+    <section class="panel">
+        <h2>Make a Reservation</h2>
+        <p class="subtitle">Fill in the details below to reserve your table.</p>
+
+        <form id="reservationForm">
+            <label for="customerName">Full Name</label>
+            <input type="text" id="customerName" placeholder="Enter your name" required>
+
+            <label for="contact">Contact Number</label>
+            <input type="text" id="contact" placeholder="Enter your contact number" required>
+
+            <label for="bookingDate">Reservation Date</label>
+            <div class="calendar-wrapper">
+                <input type="text" id="bookingDate" placeholder="Select a reservation date" readonly required>
+                <button type="button" id="calendarToggle" class="calendar-toggle">📅</button>
+
+                <div id="calendarPopup" class="calendar-popup" hidden>
+                    <div class="calendar-header">
+                        <button type="button" id="prevMonth">❮</button>
+                        <h3 id="monthYear"></h3>
+                        <button type="button" id="nextMonth">❯</button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <span>Sun</span>
+                        <span>Mon</span>
+                        <span>Tue</span>
+                        <span>Wed</span>
+                        <span>Thu</span>
+                        <span>Fri</span>
+                        <span>Sat</span>
+                    </div>
+                    <div id="calendarDays" class="calendar-days"></div>
+                    <p class="calendar-note">Available: Mon, Wed, Fri & Sat</p>
+                </div>
+            </div>
+
+            <label for="bookingTime">Available Time Slot</label>
+            <select id="bookingTime" required>
+                <option value="">Select a date first</option>
+            </select>
+
+            <p id="availability" class="availability">Select a date to check available slots.</p>
+
+            <label for="guestCount">Number of Guests</label>
+            <select id="guestCount" required>
+                <option value="1">1 Guest</option>
+                <option value="2">2 Guests</option>
+                <option value="3">3 Guests</option>
+                <option value="4">4 Guests</option>
+            </select>
+
+            <!-- PAYMENT SECTION -->
+            <div class="payment-section">
+                <h3>Payment Details</h3>
+                
+                <div class="payment-row">
+                    <span>Minimum Order:</span>
+                    <strong>₱800.00</strong>
+                </div>
+                <div class="payment-row">
+                    <span>Required Down Payment:</span>
+                    <strong>₱250.00</strong>
+                </div>
+                <div class="payment-row total-row">
+                    <span>Balance Upon Arrival:</span>
+                    <strong>₱550.00 + Remaining Order Amount</strong>
+                </div>
+
+                <div class="gcash-info">
+                    <p><strong>Send ₱250 to:</strong></p>
+                    <p class="gcash-number">📱 GCash: 0917-123-4567</p>
+                    <p class="gcash-name">Account Name: Smash Burger</p>
+                </div>
+
+                <label for="paymentFromNumber">Your GCash / Sender Number</label>
+                <input type="text" id="paymentFromNumber" placeholder="Enter the number you sent payment from" required>
+                
+                <label class="checkbox-label">
+                    <input type="checkbox" id="downPaymentPaid" required>
+                    I confirm that I have paid the ₱250 down payment
+                </label>
+                
+                <p class="payment-note">
+                    * Your reservation is not confirmed until we verify your payment. 
+                    Down payment is non-refundable if cancelled less than 24 hours in advance.
+                </p>
+            </div>
+
+            <div class="trust-section">
+                <h4>🛡️ Your Payment Is Protected</h4>
+                <ul>
+                    <li>✅ We only use <strong>verified GCash</strong> for payments</li>
+                    <li>✅ Your personal details are never shared</li>
+                    <li>✅ We will <strong>never ask for your MPIN or OTP</strong></li>
+                    <li>✅ Always check that the recipient name matches <strong>"Smash Burger"</strong></li>
+                    <li>✅ Keep your transaction screenshot until we confirm your booking</li>
+                </ul>
+            </div>
+
+            <button type="submit" id="reserveButton">Reserve Now</button>
+
+            <p id="message"></p>
+        </form>
+    </section>
+
+    <!-- MENU SECTION WITH ADD TO CART -->
+    <section class="panel">
+        <h2>🍔 Our Menu</h2>
+        <p class="subtitle">Add items to your cart — Minimum ₱800.00</p>
+
+        <div class="menu-grid">
+            <div class="menu-item">
+                <strong>Classic Smash Burger</strong>
+                <p>Beef patty, cheese, pickles, onions, special sauce</p>
+                <span class="price">₱280</span>
+                <button type="button" class="add-to-cart" data-name="Classic Smash Burger" data-price="280">Add to Cart</button>
+            </div>
+            <div class="menu-item">
+                <strong>Double Cheese Smash</strong>
+                <p>Two beef patties, double cheese, caramelized onions</p>
+                <span class="price">₱360</span>
+                <button type="button" class="add-to-cart" data-name="Double Cheese Smash" data-price="360">Add to Cart</button>
+            </div>
+            <div class="menu-item">
+                <strong>Bacon Deluxe</strong>
+                <p>Beef patty, crispy bacon, lettuce, tomato, mayo</p>
+                <span class="price">₱390</span>
+                <button type="button" class="add-to-cart" data-name="Bacon Deluxe" data-price="390">Add to Cart</button>
+            </div>
+            <div class="menu-item">
+                <strong>Mushroom Melt</strong>
+                <p>Beef patty, sautéed mushrooms, melted cheese</p>
+                <span class="price">₱340</span>
+                <button type="button" class="add-to-cart" data-name="Mushroom Melt" data-price="340">Add to Cart</button>
+            </div>
+            <div class="menu-item">
+                <strong>Crispy Fries</strong>
+                <p>Golden crispy fries</p>
+                <span class="price">₱120</span>
+                <button type="button" class="add-to-cart" data-name="Crispy Fries" data-price="120">Add to Cart</button>
+            </div>
+            <div class="menu-item">
+                <strong>Iced Tea / Soda</strong>
+                <p>Refreshing cold drinks</p>
+                <span class="price">₱80</span>
+                <button type="button" class="add-to-cart" data-name="Iced Tea / Soda" data-price="80">Add to Cart</button>
+            </div>
+        </div>
+
+        <!-- CART SUMMARY — Now below Menu -->
+        <div class="cart-summary">
+            <h3>🛒 Your Order</h3>
+            <div id="cartItems"></div>
+            <div class="cart-total">
+                <strong>Total: ₱<span id="cartTotal">0.00</span></strong>
+                <p class="cart-min-note">Minimum Order: ₱800.00</p>
+            </div>
+            <button type="button" id="clearCartBtn" class="clear-cart">Clear Cart</button>
+        </div>
+    </section>
+</main>
+
+<section class="schedule">
+    <h2>Daily Schedule</h2>
+    <p>Each time slot lasts 2 hours and accepts up to 2 groups.</p>
+    <div class="schedule-grid">
+        <div>10 AM – 12 PM</div>
+        <div>12 PM – 2 PM</div>
+        <div>2 PM – 4 PM</div>
+        <div>4 PM – 6 PM</div>
+        <div>6 PM – 7 PM</div>
+    </div>
+</section>
+
+<div class="admin-link">
+    <a href="admin.html">⚙️ Admin Panel</a>
+</div>
+
+<script src="script.js"></script>
+
+<!-- Notification Popup -->
+<div id="successPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 99999; justify-content: center; align-items: center;">
+    <div style="background: #ffffff; padding: 25px 30px; text-align: center; max-width: 300px;">
+        <h3 style="color: #000000; margin: 0 0 8px; font-size: 16px; font-weight: normal;">Reservation Sent!</h3>
+        <p style="color: #333333; font-size: 14px; line-height: 1.5; margin: 0 0 15px;">Your reservation has been submitted successfully. We will verify your payment and confirm your booking shortly.</p>
+        <button id="closePopupBtn" style="background: #ffffff; color: #000000; border: 1px solid #cccccc; padding: 6px 20px; font-size: 14px; cursor: pointer;">OK</button>
+    </div>
+</div>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — Smash Burger Reservations</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #f8f3eb; }
+        
+        /* LOGIN SCREEN */
+        .login-container {
+            max-width: 420px;
+            margin: 100px auto;
+            padding: 0 20px;
+        }
+        .login-card {
+            background: white;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .login-card h2 {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #35251d;
+        }
+        .login-card p {
+            text-align: center;
+            color: #89796e;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .error-msg {
+            color: #c0392b;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* ADMIN PANEL (hidden until login) */
+        .admin-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: none;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .back-link {
+            color: #d97931;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .logout-btn {
+            background: #594439;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+        .logout-btn:hover { background: #38251d; }
+        .admin-card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .admin-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+        .admin-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px 30px;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        .admin-row span strong { color: #35251d; }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .btn-confirm {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            width: auto;
+        }
+        .btn-confirm:hover { background: #218838; }
+        .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            width: auto;
+        }
+        .btn-delete:hover { background: #c82333; }
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .filter-bar button {
+            width: auto;
+            padding: 8px 16px;
+            background: white;
+            color: #594439;
+            border: 1px solid #ddd;
+            margin: 0;
+        }
+        .filter-bar button.active {
+            background: #d97931;
+            color: white;
+            border-color: #d97931;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #89796e;
+        }
+        .admin-note {
+            font-size: 12px;
+            color: #89796e;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-container" id="loginSection">
+    <div class="login-card">
+        <h2>🔐 Admin Login</h2>
+        <p>Enter password to access the admin panel</p>
+        
+        <label for="adminPassword">Admin Password</label>
+        <input type="password" id="adminPassword" placeholder="Enter your password">
+        
+        <button type="button" id="loginBtn">Login</button>
+        <p class="error-msg" id="loginError">❌ Incorrect password. Please try again.</p>
+    </div>
+</div>
+
+<!-- ADMIN PANEL (Hidden until login) -->
+<div class="admin-container" id="adminSection">
+    <div class="admin-header">
+        <div>
+            <h1 style="font-family:'Playfair Display', serif; color:#35251d;">⚙️ Admin — Payment Confirmation</h1>
+            <p style="color:#89796e; font-size:14px;">Confirm down payments and manage reservations</p>
+        </div>
+        <div style="display:flex; gap:12px; align-items:center;">
+            <a href="index.html" class="back-link">← Back to Booking</a>
+            <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+        </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All Reservations</button>
+        <button class="filter-btn" data-filter="pending">Pending Payment</button>
+        <button class="filter-btn" data-filter="paid">Payment Confirmed</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="admin-card" style="padding:15px 20px; margin-bottom:20px;">
+        <div class="admin-row">
+            <span><strong>Total:</strong> <span id="statTotal">0</span></span>
+            <span><strong>Pending:</strong> <span id="statPending">0</span></span>
+            <span><strong>Confirmed:</strong> <span id="statPaid">0</span></span>
+        </div>
+    </div>
+
+    <!-- RESERVATION LIST -->
+    <div id="adminList"></div>
+</div>
+
+<!-- SMS Sent Notification -->
+<div id="smsNotification" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 99999; justify-content: center; align-items: center;">
+    <div style="background: #ffffff; padding: 25px 30px; text-align: center; max-width: 300px; border: 1px solid #ddd;">
+        <h3 style="color: #000000; margin: 0 0 8px; font-size: 16px; font-weight: normal;">SMS Sent</h3>
+        <p style="color: #333333; font-size: 14px; line-height: 1.5; margin: 0 0 15px;">Confirmation SMS has been sent to the customer.</p>
+        <button id="closeSmsNotification" style="background: #ffffff; color: #000000; border: 1px solid #cccccc; padding: 6px 20px; font-size: 14px; cursor: pointer;">OK</button>
+    </div>
+</div>
+
+<script>
+// --------------------------
+// SMS Notification Functions
+// --------------------------
+function showSmsNotification() {
+    const popup = document.getElementById("smsNotification");
+    if (popup) popup.style.display = "flex";
+}
+function hideSmsNotification() {
+    const popup = document.getElementById("smsNotification");
+    if (popup) popup.style.display = "none";
+}
+document.addEventListener("click", function(e) {
+    if (e.target.id === "closeSmsNotification") hideSmsNotification();
+});
+
+// --------------------------
+// PASSWORD SETTINGS
+// Change this to your own password
+// --------------------------
+const ADMIN_PASSWORD = "smashbros123";  // 🔑 Change this to your own password!
+const STORAGE_KEY = "smashBurgerReservations";
+const SESSION_KEY = "sbAdminLoggedIn";
+
+const loginSection = document.getElementById("loginSection");
+const adminSection = document.getElementById("adminSection");
+const adminPassword = document.getElementById("adminPassword");
+const loginBtn = document.getElementById("loginBtn");
+const loginError = document.getElementById("loginError");
+const logoutBtn = document.getElementById("logoutBtn");
+
+let currentFilter = "all";
+
+// Check if already logged in on page load
+function checkAuth() {
+    if (sessionStorage.getItem(SESSION_KEY) === "true") {
+        showAdminPanel();
+    }
+}
+
+function showAdminPanel() {
+    loginSection.style.display = "none";
+    adminSection.style.display = "block";
+    displayReservations();
+}
+
+function showLogin() {
+    loginSection.style.display = "block";
+    adminSection.style.display = "none";
+    adminPassword.value = "";
+    loginError.style.display = "none";
+}
+
+function attemptLogin() {
+    if (adminPassword.value === ADMIN_PASSWORD) {
+        sessionStorage.setItem(SESSION_KEY, "true");
+        loginError.style.display = "none";
+        showAdminPanel();
+    } else {
+        loginError.style.display = "block";
+        adminPassword.value = "";
+    }
+}
+
+function logout() {
+    sessionStorage.removeItem(SESSION_KEY);
+    showLogin();
+}
+
+// Login events
+loginBtn.addEventListener("click", attemptLogin);
+adminPassword.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") attemptLogin();
+});
+logoutBtn.addEventListener("click", logout);
+
+// Reservation functions
+function loadReservations() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(saved) ? saved : [];
+    } catch { return []; }
+}
+
+function saveReservations(reservations) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reservations));
+}
+
+function updateStats() {
+    const reservations = loadReservations();
+    const pending = reservations.filter(r => !r.paymentConfirmed).length;
+    const paid = reservations.filter(r => r.paymentConfirmed).length;
+    document.getElementById("statTotal").textContent = reservations.length;
+    document.getElementById("statPending").textContent = pending;
+    document.getElementById("statPaid").textContent = paid;
+}
+
+function displayReservations() {
+    const list = document.getElementById("adminList");
+    let reservations = loadReservations();
+
+    if (currentFilter === "pending") {
+        reservations = reservations.filter(r => !r.paymentConfirmed);
+    } else if (currentFilter === "paid") {
+        reservations = reservations.filter(r => r.paymentConfirmed);
+    }
+
+    if (reservations.length === 0) {
+        list.innerHTML = `<div class="empty-state"><h3>No reservations found</h3><p>New reservations will appear here.</p></div>`;
+        updateStats();
+        return;
+    }
+
+    reservations.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+
+    list.innerHTML = "";
+
+    reservations.forEach(reservation => {
+        const isPaid = !!reservation.paymentConfirmed;
+        const card = document.createElement("div");
+        card.className = "admin-card";
+        card.innerHTML = `
+            <h3>
+                ${reservation.name}
+                <span class="status-badge ${isPaid ? 'status-paid' : 'status-pending'}">
+                    ${isPaid ? '✓ PAYMENT CONFIRMED' : '⏳ PENDING PAYMENT'}
+                </span>
+            </h3>
+            <div class="admin-row">
+                <span><strong>Code:</strong> ${reservation.code}</span>
+                <span><strong>Contact:</strong> ${reservation.contact}</span>
+            </div>
+            <div class="admin-row">
+                <span><strong>Date:</strong> ${reservation.date}</span>
+                <span><strong>Time:</strong> ${reservation.timeLabel || reservation.time}</span>
+                <span><strong>Guests:</strong> ${reservation.guests}</span>
+            </div>
+            <div class="admin-row">
+                <span><strong>Min Order:</strong> ₱${reservation.minOrderAmount || 1000}.00</span>
+                <span><strong>Down Payment:</strong> ₱${reservation.downPayment || 250}.00</span>
+                <span><strong>Balance:</strong> ₱${reservation.balanceDue || 750}.00</span>
+            </div>
+            ${reservation.confirmedAt ? `<p class="admin-note">✅ Confirmed on: ${reservation.confirmedAt}</p>` : ''}
+            <div class="action-buttons">
+                <button class="btn-confirm" data-id="${reservation.id}" ${isPaid ? 'disabled' : ''}>
+                    ${isPaid ? '✓ Confirmed' : '✓ Confirm Payment (₱250)'}
+                </button>
+                <button class="btn-delete" data-id="${reservation.id}">Delete</button>
+            </div>
+        `;
+        list.appendChild(card);
+    });
+
+    document.querySelectorAll(".btn-confirm:not([disabled])").forEach(btn => {
+        btn.addEventListener("click", () => confirmPayment(btn.dataset.id));
+    });
+    document.querySelectorAll(".btn-delete").forEach(btn => {
+        btn.addEventListener("click", () => deleteReservation(btn.dataset.id));
+    });
+
+    updateStats();
+}
+
+function confirmPayment(id) {
+    if (!confirm("Confirm that the ₱250 down payment has been received for this reservation?")) return;
+    
+    const reservations = loadReservations();
+    const idx = reservations.findIndex(r => r.id === id);
+    if (idx !== -1) {
+        reservations[idx].paymentConfirmed = true;
+        reservations[idx].confirmedAt = new Date().toLocaleString();
+        saveReservations(reservations);
+        displayReservations();
+        showSmsNotification(); // ✅ Shows "SMS Sent" notification
+    }
+}
+
+function deleteReservation(id) {
+    if (!confirm("⚠️ Delete this reservation? This cannot be undone.")) return;
+    
+    let reservations = loadReservations();
+    reservations = reservations.filter(r => r.id !== id);
+    saveReservations(reservations);
+    displayReservations();
+}
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentFilter = btn.dataset.filter;
+        displayReservations();
+    });
+});
+
+// Check login on page load
+checkAuth();
+</script>
+
+</body>
+</html>
